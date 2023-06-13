@@ -14,7 +14,7 @@ const userSchema = new mongoose.Schema({
 const User = mongoose.model('User', userSchema);
 
 //Create User (Getting data through json response)
-app.post('/CreateUser/', function(req, res){
+app.post("/", function(req, res){
     var data = req.body
     var name = data.name
     var email = data.email
@@ -29,17 +29,17 @@ app.post('/CreateUser/', function(req, res){
       newUser.save()
     .then(() => {
         console.log('User: '+name+' saved successfully');
-        res.send(200)
+        res.sendStatus(200)
     })
     .catch((error) => {
         console.error('Error saving user:', error);
-        res.send(500)
+        res.sendStatus(500)
     });
 })
 
 //Retrieve user with a specific username
 app.get('/username',function(req, res){
-    res.send('Users')
+    res.sendStatus('Users')
     
 })
 
@@ -61,19 +61,26 @@ app.put('/:username/:newpassword?/:newemail?/:newusername?', function(req, res){
     }
 })
 
-//Delete users
+//Delete user with username
 app.delete('/:username', function(req, res){
     var username = req.params.username
-    //delete user with username
+   
+    User.deleteOne({ name: username })
+  .then(() => {
+    console.log('User with username: '+username+' deleted successfully');
+    res.sendStatus(200)
+    })
+  .catch((error) => {
+    console.error('Error deleting user:', error);
+    res.sendStatus(500)
+  });
 })
 
 var server = app.listen(8081, '127.0.0.1' ,function(){
     var host = server.address().address
     var port = server.address().port
-    console.log("Example app listening at http://%s:%s",host, port)
+    console.log("App listening at http://%s:%s",host, port)
 })
-
-//mongodb+srv://tennismich:<password>@somecluster.jkyvdov.mongodb.net/?retryWrites=true&w=majority
 
 async function connectToDb(){
     try{
