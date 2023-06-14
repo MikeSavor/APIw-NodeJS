@@ -4,22 +4,41 @@ var bodyParser = require('body-parser')
 var mongoose = require('mongoose');
 var OpenApiValidator = require('express-openapi-validator');
 var apiSpec="./apiSpec.json"
+var jwt = require('jsonwebtoken');
 
-app.use(bodyParser.json(), OpenApiValidator.middleware({
+var validator =  new OpenApiValidator.middleware({
     apiSpec: apiSpec,
-    validateResponses: true
-  }))
+    validateRequests: true,
+    validateResponses: true,
+  });
+
+var secretkey='+ZP_+_V?kUM}TJ9>6l4vgA./8nm.<-'
+
+app.use(bodyParser.json(), validator)
 
 const userSchema = new mongoose.Schema({
     name: String,
     email: String,
     password: String
-}, { collection: 'Users' });
+});
 
 const User = mongoose.model('User', userSchema);
 
+
+app.post('/getAuthorization', (req, res) => {
+    
+    //obviously we need to validate some actual user creds before signing and sending a token but for the shake of simplicity lets assume we've verified this is a valid user 
+
+    const user = {
+      id: 1,
+      username: 'some_valid_user',
+    }
+    const token = jwt.sign(user, secretkey)
+    res.status(200).json({ token })
+  })
+
 //Create User (Getting data through json response)
-app.post("/", function (req, res) {
+app.post("/CreateUser", function (req, res) {
     var data = req.body
     var name = data.name
     var email = data.email
@@ -33,11 +52,11 @@ app.post("/", function (req, res) {
 
     newUser.save()
         .then(() => {
-            console.log('User: ' + name + ' saved successfully');
+            console.log('User: ' + name + ' saved successfully')
             res.sendStatus(200)
         })
         .catch((error) => {
-            console.error('Error saving user:', error);
+            console.error('Error saving user:', error)
             res.sendStatus(500)
         });
 })
@@ -50,43 +69,43 @@ app.get('/:username', function (req, res) {
             if (user) {
                 
                 res.status(200).send(user)
-                console.log('Retrieved user:', user);
+                console.log('Retrieved user:', user)
             } else {
                 res.sendStatus(404)
-                console.log('User ' + username + ' not found');
+                console.log('User ' + username + ' not found')
             }
         })
         .catch((error) => {
             res.sendStatus(500)
-            console.error('Error retrieving user ' + username + ':', error);
+            console.error('Error retrieving user ' + username + ':', error)
         });
 
 })
 
-//Update users 
+//Update user with a specified username
 app.put('/:username', function (req, res) {
-    const username = req.params.username;
-    const { newpassword, newemail, newusername } = req.query;
-    const updateFields = {};
+    const username = req.params.username
+    const { newpassword, newemail, newusername } = req.query
+    const updateFields = {}
 
     if (newpassword) {
-        updateFields.password = newpassword;
+        updateFields.password = newpassword
     }
     if (newemail) {
-        updateFields.email = newemail;
+        updateFields.email = newemail
     }
     if (newusername) {
-        updateFields.name = newusername;
+        updateFields.name = newusername
     }
 
     User.updateOne({ name: username }, updateFields)
         .then(() => {
-            console.log('User fields updated successfully');
-            res.sendStatus(200);
+            console.log('User fields updated successfully')
+            res.sendStatus(200)
         })
         .catch((error) => {
             console.error('Error updating user fields:', error);
-            res.sendStatus(500);
+            res.sendStatus(500)
         });
 });
 
