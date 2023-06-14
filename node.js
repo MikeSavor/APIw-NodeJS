@@ -2,8 +2,13 @@ var express = require('express')
 var app = express()
 var bodyParser = require('body-parser')
 var mongoose = require('mongoose');
+var OpenApiValidator = require('express-openapi-validator');
+var apiSpec="./apiSpec.json"
 
-app.use(bodyParser.json())
+app.use(bodyParser.json(), OpenApiValidator.middleware({
+    apiSpec: apiSpec,
+    validateResponses: true
+  }))
 
 const userSchema = new mongoose.Schema({
     name: String,

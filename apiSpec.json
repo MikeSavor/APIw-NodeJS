@@ -1,0 +1,167 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+      "version": "1.0.0",
+      "title": "User Management API",
+      "description": "API for managing user data"
+    },
+    "paths": {
+      "/": {
+        "post": {
+          "summary": "Create User",
+          "requestBody": {
+            "required": true,
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserInput"
+                }
+              }
+            }
+          },
+          "responses": {
+            "200": {
+              "description": "User created successfully"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      },
+      "/{username}": {
+        "get": {
+          "summary": "Get User by Username",
+          "parameters": [
+            {
+              "name": "username",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User retrieved successfully",
+              "content": {
+                "application/json": {
+                  "schema": {
+                    "$ref": "#/components/schemas/User"
+                  }
+                }
+              }
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        },
+        "put": {
+          "summary": "Update User by Username",
+          "parameters": [
+            {
+              "name": "username",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "newpassword",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "newemail",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            },
+            {
+              "name": "newusername",
+              "in": "query",
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User updated successfully"
+            },
+            "404": {
+              "description": "User not found"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        },
+        "delete": {
+          "summary": "Delete User by Username",
+          "parameters": [
+            {
+              "name": "username",
+              "in": "path",
+              "required": true,
+              "schema": {
+                "type": "string"
+              }
+            }
+          ],
+          "responses": {
+            "200": {
+              "description": "User deleted successfully"
+            },
+            "500": {
+              "description": "Internal Server Error"
+            }
+          }
+        }
+      }
+    },
+    "components": {
+      "schemas": {
+        "UserInput": {
+          "type": "object",
+          "required": ["name", "email", "password"],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            }
+          }
+        },
+        "User": {
+          "type": "object",
+          "required": ["name", "email"],
+          "properties": {
+            "name": {
+              "type": "string"
+            },
+            "email": {
+              "type": "string"
+            },
+            "password": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    }
+  }
+  
